@@ -1,4 +1,4 @@
-package com.materoy.edvora
+package com.materoy.edvora.core.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
