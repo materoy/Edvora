@@ -1,4 +1,7 @@
 package com.materoy.edvora
 
-class Edvora {
-}
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class Edvora: Application()
