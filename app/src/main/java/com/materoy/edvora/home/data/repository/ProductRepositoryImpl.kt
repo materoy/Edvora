@@ -13,7 +13,7 @@ class ProductRepositoryImpl(
     private val api: EdvoraApi
 ): ProductRepository{
     override fun getProducts(): Flow<Resource<List<Product>>> = flow {
-        emit(Resource.Loading())
+        emit(Resource.Loading<List<Product>>())
 
         try {
             val products = api.getProducts()

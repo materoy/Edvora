@@ -1,5 +1,6 @@
 package com.materoy.edvora.home.di
 
+import com.google.gson.GsonBuilder
 import com.materoy.edvora.home.data.EdvoraApi
 import com.materoy.edvora.home.data.repository.ProductRepositoryImpl
 import com.materoy.edvora.home.domain.repository.ProductRepository
@@ -22,7 +23,9 @@ object HomeModule {
        return Retrofit.Builder()
         .baseUrl(EdvoraApi.BASE_URL)
         .addConverterFactory(
-            GsonConverterFactory.create()
+            GsonConverterFactory.create(
+                GsonBuilder().setLenient().create()
+            )
         )
         .build()
         .create(EdvoraApi::class.java)
