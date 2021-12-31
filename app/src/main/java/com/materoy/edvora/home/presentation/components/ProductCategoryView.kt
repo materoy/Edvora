@@ -69,7 +69,8 @@ fun ProductCategoryView(title: String, products: List<Product>) {
                 val layoutInfo = listState.layoutInfo
 
                 for (i in 0..2) {
-                    val progress = ((products.size / 3) ).toInt()
+                    val progress =
+                        ((if (listState.firstVisibleItemIndex == 0) 1 else listState.firstVisibleItemIndex) / (products.size / 3)).toInt()
 
                     Canvas(
                         modifier = Modifier.padding(vertical = 5.dp, horizontal = 10.dp),
