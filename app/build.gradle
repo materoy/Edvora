@@ -106,14 +106,6 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
     implementation "com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2"
 
-    // Room
-    implementation "androidx.room:room-runtime:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-
-    // Kotlin Extensions and Coroutines support for Room
-    implementation "androidx.room:room-ktx:2.3.0"
-
     // Glide
     implementation "com.github.skydoves:landscapist-glide:$landscapist_glide_version"
 
