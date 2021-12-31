@@ -1,108 +1,161 @@
 package com.materoy.edvora.home.presentation.components
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import com.materoy.edvora.ui.theme.EdvoraTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.rounded.Check
+import com.materoy.edvora.home.presentation.Categories
+import com.materoy.edvora.home.presentation.Filters
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FiltersDropDownButton() {
-    var filterDropDownEnabled by remember { mutableStateOf(false) }
-    val dropDownItems = listOf<String>("Products", "State", "City")
-    val icon = if (filterDropDownEnabled)
+fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val icon = if (expanded)
         Icons.Filled.ArrowDropUp
     else
         Icons.Filled.ArrowDropDown
 
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-
     ExposedDropdownMenuBox(
-        expanded = filterDropDownEnabled,
-        onExpandedChange = { didExpand -> filterDropDownEnabled = didExpand }) {
+        expanded = expanded,
+        onExpandedChange = { didExpand -> expanded = didExpand },
+        modifier = Modifier
+            .padding(0.dp)
+            .clip(
+                if (expanded) RoundedCornerShape(
+                    topStart = 20.dp,
+                    topEnd = 20.dp
+                ) else RoundedCornerShape(10.dp)
+            )
+    ) {
         TextField(
             readOnly = true,
-            value = "Filters",
+            value = "",
+            placeholder = { Text("Filters") },
             onValueChange = { },
-            label = { Text("Label") },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = filterDropDownEnabled
+                    expanded = expanded
                 )
             },
-            colors = ExposedDropdownMenuDefaults.textFieldColors()
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                backgroundColor = MaterialTheme.colors.primary,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = if (expanded) Color.Gray else Color.Transparent
+            ),
+            modifier = Modifier
+                .width(200.dp)
+                .padding(0.dp)
         )
         ExposedDropdownMenu(
-            expanded = filterDropDownEnabled,
+            expanded = expanded,
             onDismissRequest = {
-                filterDropDownEnabled = false
-            }
+                expanded = false
+            },
+            modifier = Modifier.clip(RoundedCornerShape(bottomEnd = 20.dp, bottomStart = 20.dp))
         ) {
-            dropDownItems.forEach { selectionOption ->
-                DropdownMenuItem(
-                    onClick = {
-                        filterDropDownEnabled = false
+            Categories.values().forEach { item ->
+                val items: List<String> = when (item) {
+                    Categories.Products -> filters.productNames
+                    Categories.City -> filters.states
+                    Categories.State -> filters.cities
+                    else -> {
+                        emptyList()
                     }
-                ) {
-                    Text(text = selectionOption)
                 }
-            }
-        }
-    }
-    Box(
-        modifier = Modifier
-            .width(150.dp)
-            .wrapContentSize(Alignment.TopStart)
-            .border(0.5.dp, MaterialTheme.colors.onSurface.copy(0.5f))
-    ) {
-        OutlinedTextField(
-            value = "Filters",
-            onValueChange = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    //This value is used to assign to the DropDown the same width
-                    textFieldSize = coordinates.size.toSize()
-                },
-            trailingIcon = {
-                Icon(icon, "contentDescription",
-                    Modifier.clickable { filterDropDownEnabled = !filterDropDownEnabled })
-            }
-        )
-        DropdownMenu(
-            expanded = filterDropDownEnabled,
-            onDismissRequest = { filterDropDownEnabled = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-        ) {
-            dropDownItems.forEach { label: String ->
-                DropdownMenuItem(onClick = { }) {
-                    Text(text = label)
+
+                val selectedItems: List<String> = when (item) {
+                    Categories.Products -> filters.productFilterList
+                    Categories.City -> filters.stateFilterList
+                    Categories.State -> filters.citiesFilterList
+                    else -> {
+                        emptyList()
+                    }
+                }
+
+                DropdownMenuItem(
+                    onClick = { }
+                ) {
+                    NestedDropDown(
+                        title = item.name,
+                        items = items,
+                        selectedItems = selectedItems,
+                        onSelectItem = { onSelectItem(item, it) }
+                    )
                 }
             }
         }
     }
 }
 
-@Preview
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FiltersDropDownButtonPreview() {
-    EdvoraTheme {
-        FiltersDropDownButton()
+private fun NestedDropDown(
+    title: String,
+    items: List<String>,
+    selectedItems: List<String>,
+    onSelectItem: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(Modifier.padding(vertical = 5.dp)) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .clickable { expanded = !expanded }
+                .background(color = MaterialTheme.colors.background)
+                .padding(horizontal = 8.dp, vertical = 2.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(text = title)
+            ExposedDropdownMenuDefaults.TrailingIcon(
+                expanded = expanded
+            )
+        }
+        DropdownMenu(
+            expanded = expanded, onDismissRequest = { expanded = false }, modifier = Modifier.clip(
+                RoundedCornerShape(15.dp)
+            )
+        ) {
+            items.forEach { item ->
+                DropdownMenuItem(
+                    onClick = { /*TODO*/ },
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(MaterialTheme.colors.surface)
+                ) {
+                    Row(
+                        Modifier
+                            .clickable { onSelectItem(item) }
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Rounded.Check,
+                            contentDescription = null,
+                            tint = if (selectedItems.contains(item)) Color.Blue else Color.Transparent
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(item)
+                    }
+                }
+            }
+        }
     }
 }

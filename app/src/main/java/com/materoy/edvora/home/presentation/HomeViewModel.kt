@@ -20,7 +20,16 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state =
-        mutableStateOf(HomeState(uniqueNames = emptyList(), products = emptyList()))
+        mutableStateOf(
+            HomeState(
+                products = emptyList(),
+                filters = Filters(
+                    productNames = emptyList(),
+                    states = emptyList(),
+                    cities = emptyList()
+                )
+            )
+        )
 
     val state: State<HomeState> = _state
 
@@ -29,20 +38,21 @@ class HomeViewModel @Inject constructor(
             getProducts().onEach { result: Resource<List<Product>> ->
                 when (result) {
                     is Resource.Success -> {
-                        val uniqueNames: ArrayList<String> = ArrayList()
-
-                        result.data?.forEach { product ->
-                            if (! uniqueNames.contains(product.productName))
-                                uniqueNames.add(product.productName)
-                        }
+                        val products: List<Product> = result?.data ?: emptyList()
+                        val productNames = getProductNames(products)
+                        val states = getStates(products)
+                        val cities = getCities(products)
 
                         _state.value = state.value.copy(
                             isLoading = false,
-                            products = result?.data ?: emptyList(),
-                            uniqueNames = uniqueNames
+                            products = products,
+                            filters = state.value.filters.copy(
+                                productNames = productNames,
+                                states = states,
+                                cities = cities
+                            ),
                         )
 
-                        println(_state.value.uniqueNames.size)
                     }
 
                     is Resource.Error -> {
@@ -58,6 +68,52 @@ class HomeViewModel @Inject constructor(
                     }
                 }
             }.launchIn(this)
+        }
+    }
+
+    private fun getProductNames(products: List<Product>): List<String> {
+        val productNames: ArrayList<String> = ArrayList()
+        products.forEach { product ->
+            if (!productNames.contains(product.productName))
+                productNames.add(product.productName)
+        }
+        return productNames
+    }
+
+    private fun getStates(products: List<Product>): List<String> {
+        val states: ArrayList<String> = ArrayList()
+        products.forEach { product ->
+            if (!states.contains(product.address.state))
+                states.add(product.address.state)
+        }
+        return states
+    }
+
+    private fun getCities(products: List<Product>): List<String> {
+        val cities: ArrayList<String> = ArrayList()
+        products.forEach { product ->
+            if (!cities.contains(product.address.city))
+                cities.add(product.address.city)
+        }
+        return cities
+    }
+
+    fun addFilter(category: Categories, item: String) {
+        when (category) {
+            Categories.Products -> {
+                val productFilterList: ArrayList<String> =
+                    ArrayList(state.value.filters.productFilterList)
+                if (productFilterList.contains(item)) productFilterList.remove(item)
+                else productFilterList.add(item)
+
+                _state.value = state.value.copy(
+                    filters = state.value.filters.copy(
+                        productFilterList = productFilterList
+                    )
+                )
+            }
+            Categories.City -> {}
+            Categories.State -> {}
         }
     }
 

@@ -1,21 +1,26 @@
 package com.materoy.edvora.home.presentation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.materoy.edvora.home.presentation.components.FiltersDropDownButton
+import com.materoy.edvora.home.presentation.components.ProductCategoryView
 import com.materoy.edvora.ui.theme.EdvoraTheme
 
 @Composable
 fun HomePage() {
-//    val viewModel: HomeViewModel = hiltViewModel()
-//    val state by viewModel.state
+    val viewModel: HomeViewModel = hiltViewModel()
+    val state by viewModel.state
 
     Scaffold(Modifier, topBar = {
         Text(
@@ -35,11 +40,17 @@ fun HomePage() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    FiltersDropDownButton()
+                    FiltersDropDownButton(
+                        state.filters,
+                        onSelectItem = { category, selectedItem ->  }
+                    )
 
                     Button(
                         onClick = { /*TODO*/ },
-                        modifier = Modifier.clip(RoundedCornerShape(5.dp)),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .clip(RoundedCornerShape(5.dp))
+                            .height(40.dp),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = MaterialTheme.colors.primary
                         )
@@ -49,19 +60,19 @@ fun HomePage() {
                 }
 
 
-//                // Products list
-//                LazyColumn(modifier = Modifier) {
-//                    items(state.uniqueNames) { productName: String ->
-//                        ProductCategoryView(
-//                            title = productName,
-//                            products = state.products.filter { product -> product.productName == productName })
-//                    }
-//                }
+                // Products list
+                LazyColumn(modifier = Modifier) {
+                    items(state.filters.productNames) { productName: String ->
+                        ProductCategoryView(
+                            title = productName,
+                            products = state.products.filter { product -> product.productName == productName })
+                    }
+                }
             }
 
-//            if (state.isLoading) {
-//                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-//            }
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            }
         }
     }
 
