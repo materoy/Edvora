@@ -98,11 +98,14 @@ class HomeViewModel @Inject constructor(
         return cities
     }
 
+    // Adds a selected filter to the filter list in any category
+
     fun addFilter(category: Categories, item: String) {
         when (category) {
             Categories.Products -> {
                 val productFilterList: ArrayList<String> =
                     ArrayList(state.value.filters.productFilterList)
+                // Adds to the list if non existent and removes if the item exists in the list
                 if (productFilterList.contains(item)) productFilterList.remove(item)
                 else productFilterList.add(item)
 
@@ -112,9 +115,58 @@ class HomeViewModel @Inject constructor(
                     )
                 )
             }
-            Categories.City -> {}
-            Categories.State -> {}
+            Categories.City -> {
+                val cityFilterList: ArrayList<String> =
+                    ArrayList(state.value.filters.citiesFilterList)
+                if (cityFilterList.contains(item)) cityFilterList.remove(item)
+                else cityFilterList.add(item)
+
+                _state.value = state.value.copy(
+                    filters = state.value.filters.copy(
+                        citiesFilterList = cityFilterList
+                    )
+                )
+            }
+            Categories.State -> {
+                val stateFilterList: ArrayList<String> =
+                    ArrayList(state.value.filters.stateFilterList)
+                if (stateFilterList.contains(item)) stateFilterList.remove(item)
+                else stateFilterList.add(item)
+
+                _state.value = state.value.copy(
+                    filters = state.value.filters.copy(
+                        stateFilterList = stateFilterList
+                    )
+                )
+            }
         }
+    }
+
+    // Updates the items displayed to the user after the filters have been applied
+    fun onUpdateFilters() {
+        println("Update items")
+        val products = state.value.products.filter { product ->  state.value.filters.productFilterList.contains(product.productName) }
+        _state.value = state.value.copy(
+            filteredProducts = products,
+            filters = state.value.filters.copy(
+                cities = products.map { it.address.city }.toSet().toList(),
+                states = products.map { it.address.city }.toSet().toList(),
+                citiesFilterList = emptyList(),
+                stateFilterList = emptyList()
+            )
+        )
+    }
+
+    // Removes all applied filters and return to original query state
+    fun clearFilter() {
+        _state.value = state.value.copy(
+            filteredProducts = emptyList(),
+            filters = state.value.filters.copy(
+                stateFilterList = emptyList(),
+                productFilterList = emptyList(),
+                citiesFilterList = emptyList(),
+            )
+        )
     }
 
 }

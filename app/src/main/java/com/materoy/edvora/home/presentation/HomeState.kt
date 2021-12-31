@@ -4,6 +4,7 @@ import com.materoy.edvora.home.domain.model.Product
 
 data class HomeState(
     val products: List<Product>,
+    val filteredProducts: List<Product> = emptyList(),
     val isLoading: Boolean = false,
 
     val filters: Filters

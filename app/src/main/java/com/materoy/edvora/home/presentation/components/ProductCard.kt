@@ -37,7 +37,7 @@ fun ProductCard(product: Product) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(Modifier.height(110.dp), Arrangement.SpaceBetween) {
+                    Column(Modifier.height(120.dp), Arrangement.SpaceBetween) {
                         // Product image
                         GlideImage(
                             imageModel = product.imageUrl, modifier = Modifier
@@ -48,6 +48,14 @@ fun ProductCard(product: Product) {
 
                         // Location
                         Text(
+                            text = product.address.state,
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
+                            ),
+                            modifier = Modifier
+                        )
+                        Text(
                             text = product.address.city,
                             style = MaterialTheme.typography.caption.copy(
                                 fontSize = 14.sp,
@@ -56,7 +64,7 @@ fun ProductCard(product: Product) {
                             modifier = Modifier
                         )
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
+                    Spacer(modifier = Modifier.width(15.dp))
 
                     Column(
                         Modifier.height(110.dp),

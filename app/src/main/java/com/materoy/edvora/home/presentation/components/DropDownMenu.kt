@@ -20,12 +20,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.CheckCircleOutline
 import com.materoy.edvora.home.presentation.Categories
 import com.materoy.edvora.home.presentation.Filters
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -> Unit) {
+fun FiltersDropDownButton(
+    filters: Filters,
+    onSelectItem: (Categories, String) -> Unit,
+    onUpdateItems: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     val icon = if (expanded)
         Icons.Filled.ArrowDropUp
@@ -34,7 +39,10 @@ fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { didExpand -> expanded = didExpand },
+        onExpandedChange = { didExpand ->
+            expanded = didExpand
+            if (!didExpand) onUpdateItems()
+        },
         modifier = Modifier
             .padding(0.dp)
             .clip(
@@ -42,7 +50,7 @@ fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -
                     topStart = 20.dp,
                     topEnd = 20.dp
                 ) else RoundedCornerShape(10.dp)
-            )
+            ),
     ) {
         TextField(
             readOnly = true,
@@ -67,14 +75,17 @@ fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -
             expanded = expanded,
             onDismissRequest = {
                 expanded = false
+                onUpdateItems()
             },
-            modifier = Modifier.clip(RoundedCornerShape(bottomEnd = 20.dp, bottomStart = 20.dp))
+            modifier = Modifier
+                .clip(RoundedCornerShape(bottomEnd = 20.dp, bottomStart = 20.dp))
+                .padding(vertical = 10.dp)
         ) {
             Categories.values().forEach { item ->
                 val items: List<String> = when (item) {
                     Categories.Products -> filters.productNames
-                    Categories.City -> filters.states
-                    Categories.State -> filters.cities
+                    Categories.City -> filters.cities
+                    Categories.State -> filters.states
                     else -> {
                         emptyList()
                     }
@@ -82,8 +93,8 @@ fun FiltersDropDownButton(filters: Filters, onSelectItem: (Categories, String) -
 
                 val selectedItems: List<String> = when (item) {
                     Categories.Products -> filters.productFilterList
-                    Categories.City -> filters.stateFilterList
-                    Categories.State -> filters.citiesFilterList
+                    Categories.City -> filters.citiesFilterList
+                    Categories.State -> filters.stateFilterList
                     else -> {
                         emptyList()
                     }
@@ -126,7 +137,7 @@ private fun NestedDropDown(
             horizontalArrangement = Arrangement.SpaceBetween) {
             Text(text = title)
             ExposedDropdownMenuDefaults.TrailingIcon(
-                expanded = expanded
+                expanded = expanded, onIconClick = { expanded = !expanded }
             )
         }
         DropdownMenu(
@@ -136,18 +147,19 @@ private fun NestedDropDown(
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    onClick = { /*TODO*/ },
+                    onClick = { onSelectItem(item) },
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .background(MaterialTheme.colors.surface)
                 ) {
                     Row(
                         Modifier
-                            .clickable { onSelectItem(item) }
                             .padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
                         Icon(
-                            imageVector = Icons.Rounded.Check,
+                            imageVector = Icons.Rounded.CheckCircleOutline,
                             contentDescription = null,
                             tint = if (selectedItems.contains(item)) Color.Blue else Color.Transparent
                         )

@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,11 +43,17 @@ fun HomePage() {
                 ) {
                     FiltersDropDownButton(
                         state.filters,
-                        onSelectItem = { category, selectedItem ->  }
+                        onSelectItem = { category, selectedItem ->
+                            viewModel.addFilter(
+                                category,
+                                selectedItem
+                            )
+                        },
+                        onUpdateItems = { viewModel.onUpdateFilters() }
                     )
 
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { viewModel.clearFilter() },
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
                             .clip(RoundedCornerShape(5.dp))
@@ -62,7 +69,8 @@ fun HomePage() {
 
                 // Products list
                 LazyColumn(modifier = Modifier) {
-                    items(state.filters.productNames) { productName: String ->
+                    // Only shows filtered product names if it exists
+                    items(if (state.filters.productFilterList.isNotEmpty()) state.filters.productFilterList else state.filters.productNames) { productName: String ->
                         ProductCategoryView(
                             title = productName,
                             products = state.products.filter { product -> product.productName == productName })
@@ -71,7 +79,7 @@ fun HomePage() {
             }
 
             if (state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), Color.Green)
             }
         }
     }
