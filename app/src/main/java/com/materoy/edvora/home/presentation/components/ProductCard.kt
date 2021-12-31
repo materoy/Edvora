@@ -37,7 +37,7 @@ fun ProductCard(product: Product) {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(Modifier.height(120.dp), Arrangement.SpaceBetween) {
+                    Column(Modifier.height(120.dp).width(120.dp), Arrangement.SpaceBetween) {
                         // Product image
                         GlideImage(
                             imageModel = product.imageUrl, modifier = Modifier

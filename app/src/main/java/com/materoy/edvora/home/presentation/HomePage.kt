@@ -1,5 +1,6 @@
 package com.materoy.edvora.home.presentation
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,11 +25,17 @@ fun HomePage() {
     val viewModel: HomeViewModel = hiltViewModel()
     val state by viewModel.state
 
+    val landscapeMode = when(LocalConfiguration.current.orientation){
+        Configuration.ORIENTATION_LANDSCAPE -> true
+        Configuration.ORIENTATION_PORTRAIT -> false
+        else -> false
+    }
+
     Scaffold(Modifier, topBar = {
         Text(
             text = "Edvora",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
+            style = if(landscapeMode) MaterialTheme.typography.h6 else MaterialTheme.typography.h4 ,
+            modifier = Modifier.padding(vertical = if(landscapeMode) 10.dp else 20.dp, horizontal = 20.dp)
         )
     }, backgroundColor = MaterialTheme.colors.background) { innerPadding ->
         Box(
