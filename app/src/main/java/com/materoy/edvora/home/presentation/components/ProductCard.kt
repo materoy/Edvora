@@ -58,7 +58,7 @@ fun ProductCard(product: Product) {
                         Text(
                             text = product.address.city,
                             style = MaterialTheme.typography.caption.copy(
-                                fontSize = 14.sp,
+                                fontSize = 12.sp,
                                 color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f)
                             ),
                             modifier = Modifier
@@ -67,7 +67,7 @@ fun ProductCard(product: Product) {
                     Spacer(modifier = Modifier.width(15.dp))
 
                     Column(
-                        Modifier.height(110.dp),
+                        Modifier.height(115.dp),
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
                         // Product name

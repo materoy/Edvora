@@ -49,7 +49,9 @@ fun HomePage() {
                                 selectedItem
                             )
                         },
-                        onUpdateItems = { viewModel.onUpdateFilters() }
+                        onUpdateItems = {
+//                            viewModel.onUpdateFilters()
+                        }
                     )
 
                     Button(
@@ -68,12 +70,17 @@ fun HomePage() {
 
 
                 // Products list
-                LazyColumn(modifier = Modifier) {
+                LazyColumn(modifier = Modifier.padding(bottom = 20.dp)) {
+                    val products =
+                        if (state.filters.productFilterList.isNotEmpty()) state.filters.productFilterList else state.filters.productNames
                     // Only shows filtered product names if it exists
-                    items(if (state.filters.productFilterList.isNotEmpty()) state.filters.productFilterList else state.filters.productNames) { productName: String ->
+                    items(products) { productName: String ->
                         ProductCategoryView(
                             title = productName,
-                            products = state.products.filter { product -> product.productName == productName })
+                            products = if (state.filteredProducts.isEmpty())
+                                state.products.filter { it.productName == productName }
+                            else state.filteredProducts.filter { it.productName == productName }
+                        )
                     }
                 }
             }

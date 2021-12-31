@@ -103,6 +103,7 @@ class HomeViewModel @Inject constructor(
     fun addFilter(category: Categories, item: String) {
         when (category) {
             Categories.Products -> {
+                val products = state.value.products
                 val productFilterList: ArrayList<String> =
                     ArrayList(state.value.filters.productFilterList)
                 // Adds to the list if non existent and removes if the item exists in the list
@@ -111,31 +112,45 @@ class HomeViewModel @Inject constructor(
 
                 _state.value = state.value.copy(
                     filters = state.value.filters.copy(
-                        productFilterList = productFilterList
-                    )
-                )
-            }
-            Categories.City -> {
-                val cityFilterList: ArrayList<String> =
-                    ArrayList(state.value.filters.citiesFilterList)
-                if (cityFilterList.contains(item)) cityFilterList.remove(item)
-                else cityFilterList.add(item)
-
-                _state.value = state.value.copy(
-                    filters = state.value.filters.copy(
-                        citiesFilterList = cityFilterList
+                        productFilterList = productFilterList,
+                        cities = products.filter { productFilterList.contains(it.productName) }
+                            .map { it.address.city }.toSet().toList(),
+                        states = products.filter { productFilterList.contains(it.productName) }
+                            .map { it.address.state }.toSet().toList(),
+                        // Refresh cities and states filter
+                        citiesFilterList = emptyList(),
+                        stateFilterList = emptyList(),
                     )
                 )
             }
             Categories.State -> {
+                val products = state.value.products
                 val stateFilterList: ArrayList<String> =
                     ArrayList(state.value.filters.stateFilterList)
                 if (stateFilterList.contains(item)) stateFilterList.remove(item)
                 else stateFilterList.add(item)
 
                 _state.value = state.value.copy(
+                    filteredProducts = products.filter { stateFilterList.contains(it.address.state) },
                     filters = state.value.filters.copy(
-                        stateFilterList = stateFilterList
+                        stateFilterList = stateFilterList,
+                        citiesFilterList = emptyList(),
+                        cities = products.filter { stateFilterList.contains(it.address.state) }
+                            .map { it.address.city }.toSet().toList()
+                    )
+                )
+            }
+            Categories.City -> {
+                val products = state.value.products
+                val cityFilterList: ArrayList<String> =
+                    ArrayList(state.value.filters.citiesFilterList)
+                if (cityFilterList.contains(item)) cityFilterList.remove(item)
+                else cityFilterList.add(item)
+
+                _state.value = state.value.copy(
+                    filteredProducts = products.filter { cityFilterList.contains(it.address.city) },
+                    filters = state.value.filters.copy(
+                        citiesFilterList = cityFilterList,
                     )
                 )
             }
@@ -144,8 +159,9 @@ class HomeViewModel @Inject constructor(
 
     // Updates the items displayed to the user after the filters have been applied
     fun onUpdateFilters() {
-        println("Update items")
-        val products = state.value.products.filter { product ->  state.value.filters.productFilterList.contains(product.productName) }
+        val products = state.value.products.filter { product ->
+            state.value.filters.productFilterList.contains(product.productName)
+        }
         _state.value = state.value.copy(
             filteredProducts = products,
             filters = state.value.filters.copy(
