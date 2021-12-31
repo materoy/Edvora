@@ -27,14 +27,12 @@ The app is built using the Modular MVVM architectural pattern and makes heavy us
 
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
 
 |<img src="images/home_loading.png" width=250/>|<img src="images/home.png" width=250/>|
-|:----:|:----:|:----:|
+|:----:|:----:|
 
 |<img src="images/home_filters_0.png" width=250/>|<img src="images/home_filters_1.png" width=250/>|
-|:----:|:----:|:----:|
+|:----:|:----:|
 
 |<img src="images/home_landscape.png" width=400>
 |:----:|:----:|
