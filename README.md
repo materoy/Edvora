@@ -21,7 +21,7 @@ Libraries used in the whole application are:
 
 The app is built using the Modular MVVM architectural pattern and makes heavy use of a couple of Android Jetpack components. MVVM allows for the separation of concern which also makes testing easier. The app has a fragment that communicates to ViewModel which in turn communicates to the usecase which communiacates to Repository to get data.
 
-|<img src="images/arch.png" width=400 height=500/>|
+|<img src="images/arch.png" width=300 height=300/>|
 |:----:|
 
 
@@ -35,7 +35,7 @@ The app is built using the Modular MVVM architectural pattern and makes heavy us
 |:----:|:----:|
 
 |<img src="images/home_landscape.png" width=400>
-|:----:|:----:|
+|:----:|
 ## Acknowledgements
 
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
